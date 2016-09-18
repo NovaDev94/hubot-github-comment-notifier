@@ -7,9 +7,9 @@
 #   You need to add `HUBOT_URL/hubot/github-issue?room=ROOM[&only-mentioned=1]` to your repository's webhooks.
 #     HUBOT_URL: Your Hubot server's url
 #     ROOM` To which room you want to send notification
-# 
+#
 #     When `&only-commented=1` is added, it sends notifications only when there are `@` mentions.
-# 
+#
 # Author:
 #   yujiosaka
 
@@ -25,9 +25,11 @@ module.exports = (robot) ->
     query = querystring.parse url.parse(req.url).query
     opts =
       only_mentioned: query["only-mentioned"]
+      direct_message: query["direct-message"]
+      room: query["room"]
     parts = parseBody req.body
     message = lib.buildMessage parts, opts
-    robot.send {room: query.room}, message if message
+    lib.sendMessage robot, message, opts
     res.end ""
 
 parseBody = (data) ->

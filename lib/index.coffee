@@ -4,11 +4,20 @@ path = require 'path'
 team = try require(path.resolve(process.env.HUBOT_TEAM_PATH))
 
 exports.extractMentions = (body) ->
+  return [] unless body
   mentions = []
   match = body.match /(^|\s)(@[\w\-\/]+)/g
   if match
     mentions = _.uniq(mention.trim() for mention in match)
   mentions
+
+exports.sendMessage = (robot, message, opts) ->
+  return null unless message
+  {content, recipients} = message
+  robot.send {room: opts.room}, content if opts.room
+  if opts.direct_message
+    for recipient in recipients
+      try robot.send {room: recipient}, content
 
 exports.buildMessage = (parts, opts) ->
   return null unless parts
@@ -21,7 +30,7 @@ exports.buildMessage = (parts, opts) ->
   msg += "#{parts.body}\n" if parts.body
   msg += "Mentions: #{mentions.join(", ")}\n" if mentions.length
   msg += "Congratulations! You are assigned: #{random_mentions.join(", ")}\n" if random_mentions.length
-  msg
+  { recipients: mentions, content: msg }
 
 convert = (github_mentions) ->
   return github_mentions unless team
