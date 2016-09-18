@@ -1,5 +1,7 @@
-_ = require 'underscore'
-team = try require process.env.HUBOT_TEAM_PATH
+_    = require 'underscore'
+path = require 'path'
+
+team = try require(path.resolve(process.env.HUBOT_TEAM_PATH))
 
 exports.extractMentions = (body) ->
   mentions = []
